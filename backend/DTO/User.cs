@@ -1,1 +1,1 @@
-public record User(string name, string password, string? pic_url);
+public record User(string name, string password, string? email, string? pic_url);

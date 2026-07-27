@@ -15,9 +15,13 @@ public class UserController : ControllerBase
     }
     
     // testing query and body
-    [HttpPost("user")]
-    public IActionResult PostUser([FromBody] User user, [FromQuery] string? q)
+    [HttpPost("login")]
+    public ActionResult<User> PostLogin([FromBody] User user)
     {
-        return Ok(new {user, q});
+        // login + jwt logic
+        List<string> errors = new();
+        if(user.password.Length < 5) errors.Add("Your password should be at least 5 chars long!");
+        if (errors.Count > 0) return BadRequest(new{errors});
+        return Ok(user);
     }
 }
