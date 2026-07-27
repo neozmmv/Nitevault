@@ -18,6 +18,8 @@
 
           # Prevents dotnet from trying to auto-download SDKs/telemetry noise
           shellHook = ''
+            export DOTNET_ROOT="${pkgs.dotnet-sdk_10}/share/dotnet"
+            export PATH="${pkgs.dotnet-sdk_10}/share/dotnet:$PATH"
             export DOTNET_CLI_TELEMETRY_OPTOUT=1
             export DOTNET_NOLOGO=1
           '';
