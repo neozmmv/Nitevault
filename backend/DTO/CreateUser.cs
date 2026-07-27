@@ -1,2 +1,2 @@
 namespace nitevault.Dto;
-public record CreateUser(string id, string? email, string name, string password);
+public record CreateUser(string email, string name, string password);
