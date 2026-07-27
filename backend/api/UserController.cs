@@ -1,9 +1,18 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using nitevault.Dto;
 
 [ApiController]
 [Route("/api")]
 public class UserController : ControllerBase
 {
+    private readonly JwtService _jwtService;
+
+    public UserController(JwtService jwtService)
+    {
+        _jwtService = jwtService;
+    }
+
     [HttpGet("user")]
     public IResult GetUser([FromQuery] string? name)
     {
@@ -13,15 +22,24 @@ public class UserController : ControllerBase
             Query = name
         });
     }
-    
-    // testing query and body
+
+    // TESTING
+    // LOGIN ROUTE
     [HttpPost("login")]
-    public ActionResult<User> PostLogin([FromBody] User user)
+    public ActionResult PostSign([FromBody] LoginRequest login)
     {
-        // login + jwt logic
-        List<string> errors = new();
-        if(user.password.Length < 5) errors.Add("Your password should be at least 5 chars long!");
-        if (errors.Count > 0) return BadRequest(new{errors});
-        return Ok(user);
+        string token = "";
+        if(login.email == "test" && login.password == "1234")
+        {
+            token = _jwtService.GenerateToken("id", login.email);
+        }
+        return Ok(new{token});
+    }
+
+    [HttpGet("checkAuth")]
+    [Authorize]
+    public ActionResult GetAuth()
+    {
+        return Ok(new{auth = true});
     }
 }

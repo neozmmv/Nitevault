@@ -1,0 +1,43 @@
+
+
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+
+public class JwtService
+{
+    private readonly string _key;
+    private readonly string _issuer;
+    private readonly string _audience;
+
+    public JwtService(IConfiguration config)
+    {
+        _key = Environment.GetEnvironmentVariable("JWT_KEY") ?? throw new InvalidOperationException("JWT_KEY MUST BE SET IN .env!");
+        _issuer = "nitevault";
+        _audience = "nitevault-users";
+    }
+
+    public string GenerateToken(string userId, string email)
+    {
+        List<Claim> claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Sub, userId),
+            new(JwtRegisteredClaimNames.Email, email),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
+        SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        JwtSecurityToken token = new JwtSecurityToken(
+            issuer: _issuer,
+            audience: _audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(2),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+}
