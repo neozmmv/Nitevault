@@ -1,0 +1,1 @@
+public record User(string name, string password, string? pic_url);
