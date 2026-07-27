@@ -4,3 +4,7 @@ GET {{Nitevault_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{Nitevault_HostAddress}}/api/user?name=test
+
+###

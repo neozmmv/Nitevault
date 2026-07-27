@@ -9,5 +9,19 @@ services:
     command: redis-server --appendonly yes
     restart: unless-stopped
 
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: nitevault
+      POSTGRES_PASSWORD: nitevault
+      POSTGRES_DB: nitevault
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
 volumes:
   redis_data:
+  postgres_data:
