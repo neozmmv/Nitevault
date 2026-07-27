@@ -17,12 +17,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-var summaries = new[]
+/* var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+}; */
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/", () =>
+{
+    return Results.Ok(new
+    {
+        Message = "Hello!",
+    });
+});
+
+/* app.MapGet("/weatherforecast", () =>
 {
     var forecast =  Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
@@ -34,7 +42,7 @@ app.MapGet("/weatherforecast", () =>
         .ToArray();
     return forecast;
 })
-.WithName("GetWeatherForecast");
+.WithName("GetWeatherForecast"); */
 
 app.Run();
 
