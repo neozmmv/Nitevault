@@ -1,36 +1,29 @@
-using System.Data.Common;
-using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using nitevault.Dto;
 using nitevault.Models;
-using BCrypt.Net;
-using Microsoft.VisualBasic;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 
 [ApiController]
 [Route("/api")]
 public class UserController : ControllerBase
 {
-    private readonly JwtService _jwtService;
     private readonly UserService _userService;
     private readonly AppDbContext _db;
 
-    public UserController(JwtService jwtService, AppDbContext db, UserService userService)
+    public UserController(AppDbContext db, UserService userService)
     {
-        _jwtService = jwtService;
         _db = db;
         _userService = userService;
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult> PostSign([FromBody] LoginRequest login)
+    public async Task<ActionResult<JWTToken>> PostSign([FromBody] LoginRequest login)
     {
-        string token = await _userService.Login(login);
-        if(token.Length < 1) return Unauthorized(new {error = "Invalid login!"});
-        return Ok(new{token});
+        JWTToken jwt = await _userService.Login(login);
+        if(jwt.token.Length < 1) return Unauthorized(new {error = "Invalid login!"});
+        return Ok(jwt);
     }
 
     // migrate to UserService.cs

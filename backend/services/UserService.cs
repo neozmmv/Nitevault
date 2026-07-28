@@ -1,6 +1,9 @@
+using System.Security.Cryptography;
+using System.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
 using nitevault.Dto;
 using nitevault.Models;
+using System.Text;
 
 public class UserService
 {
@@ -17,13 +20,22 @@ public class UserService
     /// </summary>
     /// <param name="login"></param>
     /// <returns>JWT Token</returns>
-    public async Task<string> Login(LoginRequest login)
+    public async Task<JWTToken> Login(LoginRequest login)
     {
         User? user = await _db.Users.FirstOrDefaultAsync(u => u.Email == login.email);
-        if(user is null) return string.Empty;
-        if(BCrypt.Net.BCrypt.Verify(login.password, user.PasswordHash))
+        if(user is null || !BCrypt.Net.BCrypt.Verify(login.password, user.PasswordHash)) throw new Exception("Invalid Login!");
+        JWTToken jwt = _jwt.GenerateToken(user.Id.ToString(), user.Email);
+        string refresh = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(jwt.refresh)));
+        
+        RefreshToken rt = new RefreshToken
         {
-            return _jwt.GenerateToken(user.Id.ToString(), user.Email);
-        } else return string.Empty;
+            UserId = user.Id,
+            TokenHash = refresh,
+            ExpiresAt = DateTime.UtcNow.AddDays(7)
+        };
+
+        _db.RefreshTokens.Add(rt);
+        await _db.SaveChangesAsync();
+        return jwt;
     }
 }

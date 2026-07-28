@@ -1,7 +1,7 @@
-
-
+using nitevault.Dto;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,7 +18,7 @@ public class JwtService
         _audience = "nitevault-users";
     }
 
-    public string GenerateToken(string userId, string email)
+    public JWTToken GenerateToken(string userId, string email)
     {
         List<Claim> claims = new List<Claim>
         {
@@ -38,6 +38,13 @@ public class JwtService
             signingCredentials: credentials
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        // refresh token
+        byte[] random = new byte[64];
+        RandomNumberGenerator.Fill(random);
+        string refresh = Convert.ToBase64String(random);
+
+        string tokenString =  new JwtSecurityTokenHandler().WriteToken(token);
+
+        return new JWTToken(tokenString, refresh);
     }
 }

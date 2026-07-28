@@ -26,7 +26,8 @@ string dbConnectionString = Environment.GetEnvironmentVariable("DATABASE_URL") ?
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-builder.Services.AddScoped<JwtService>(); // allow JwtService to be injected in DI
+builder.Services.AddScoped<JwtService>(); // allow JwtService to be injected via DI
+builder.Services.AddScoped<UserService>(); // allow UserServices to be injected via DI
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(dbConnectionString)); // uses db context
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
