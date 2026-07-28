@@ -89,4 +89,11 @@ public class UserController : ControllerBase
     {
         return Ok(new{auth = true});
     }
+
+    [HttpGet("me")]
+    [Authorize]
+    public ActionResult UserInfo()
+    {
+        return Ok();
+    }
 }

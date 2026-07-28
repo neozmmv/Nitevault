@@ -16,6 +16,9 @@ if (envDir != null)
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Redis
+string redisConnection = Environment.GetEnvironmentVariable("REDIS_CONNECTION") ?? "localhost:6379";
+
 // JWT KEY FROM ENV
 string jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? throw new InvalidOperationException("JWT_KEY MUST BE SET IN .env!");
 
@@ -23,11 +26,12 @@ string jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? throw new Inval
 string dbConnectionString = Environment.GetEnvironmentVariable("DATABASE_URL") ?? throw new InvalidOperationException("DATABASE_URL MUST BE SET IN .env!");
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddScoped<JwtService>(); // allow JwtService to be injected via DI
 builder.Services.AddScoped<UserService>(); // allow UserServices to be injected via DI
+builder.Services.AddSingleton<RedisService>(); // redis service
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(dbConnectionString)); // uses db context
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {

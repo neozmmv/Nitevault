@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
 using nitevault.Dto;
 using nitevault.Models;
@@ -9,10 +8,12 @@ public class UserService
 {
     private readonly AppDbContext _db;
     private readonly JwtService _jwt;
-    public UserService(AppDbContext db, JwtService jwt)
+    private readonly RedisService _redis;
+    public UserService(AppDbContext db, JwtService jwt, RedisService redis)
     {
         _db = db;
         _jwt = jwt;
+        _redis = redis;
     }
 
     /// <summary>
