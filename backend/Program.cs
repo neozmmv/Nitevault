@@ -41,6 +41,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidAudience = "nitevault-users",
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
+
+    options.Events = new JwtBearerEvents {
+        OnMessageReceived = context =>
+        {
+            // authentication based on 'jwt' cookie instead of authorization header
+            if(context.Request.Cookies.TryGetValue("jwt", out string? token) && !string.IsNullOrEmpty(token))
+            {
+                context.Token = token;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization();
