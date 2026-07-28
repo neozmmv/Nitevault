@@ -22,18 +22,6 @@ public class UserController : ControllerBase
         _db = db;
     }
 
-    [HttpGet("user")]
-    public ActionResult GetUser([FromQuery] string? name)
-    {
-        return Ok(new
-        {
-            Name = "Test",
-            Query = name
-        });
-    }
-
-    // TESTING
-    // LOGIN ROUTE
     [HttpPost("login")]
     public async Task<ActionResult> PostSign([FromBody] LoginRequest login)
     {
@@ -74,9 +62,9 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpGet("user/{id}")]
-    public async Task<ActionResult> GetAllUsers(Guid Id)
+    public async Task<ActionResult> GetUser(Guid Id)
     {
-        var tokenOwner = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var tokenOwner = User.GetAuthorizedTokenOwner();
         if(Id != tokenOwner)
         {
             return Forbid();
