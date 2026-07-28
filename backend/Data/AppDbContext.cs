@@ -10,5 +10,6 @@ public class AppDbContext: DbContext
     {
         modelBuilder.Entity<User>().Property(u => u.Id).HasDefaultValueSql("gen_random_uuid()");
         modelBuilder.Entity<User>().Property(u => u.CreatedAt).HasDefaultValueSql("NOW()");
+        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
     }
 }
