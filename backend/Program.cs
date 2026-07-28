@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 string? envDir = Directory.GetCurrentDirectory();
 while (envDir != null && !File.Exists(Path.Combine(envDir, ".env")))
@@ -32,6 +33,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<JwtService>(); // allow JwtService to be injected via DI
 builder.Services.AddScoped<UserService>(); // allow UserServices to be injected via DI
 builder.Services.AddSingleton<RedisService>(); // redis service
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnection)); // redis
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(dbConnectionString)); // uses db context
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {

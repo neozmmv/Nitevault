@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using nitevault.Dto;
 using nitevault.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 
 [ApiController]
@@ -94,6 +95,8 @@ public class UserController : ControllerBase
     [Authorize]
     public ActionResult UserInfo()
     {
-        return Ok();
+        // gets id from Authorize
+        string? id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return Ok(new {id});
     }
 }
