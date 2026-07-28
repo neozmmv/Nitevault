@@ -8,32 +8,32 @@ using BCrypt.Net;
 using Microsoft.VisualBasic;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 [ApiController]
 [Route("/api")]
 public class UserController : ControllerBase
 {
     private readonly JwtService _jwtService;
+    private readonly UserService _userService;
     private readonly AppDbContext _db;
 
-    public UserController(JwtService jwtService, AppDbContext db)
+    public UserController(JwtService jwtService, AppDbContext db, UserService userService)
     {
         _jwtService = jwtService;
         _db = db;
+        _userService = userService;
     }
 
     [HttpPost("login")]
     public async Task<ActionResult> PostSign([FromBody] LoginRequest login)
     {
-        User user = await _db.Users.FirstOrDefaultAsync(u => u.Email == login.email);
-        if(!BCrypt.Net.BCrypt.Verify(login.password, user.PasswordHash))
-        {
-            return Unauthorized(new {error = "Invalid login!"});
-        }
-        string token = _jwtService.GenerateToken(user.Id.ToString()!, user.Email);
+        string token = await _userService.Login(login);
+        if(token.Length < 1) return Unauthorized(new {error = "Invalid login!"});
         return Ok(new{token});
     }
 
+    // migrate to UserService.cs
     [HttpPost("signUp")]
     public async Task<ActionResult> CreateUser([FromBody] CreateUser user)
     {
@@ -60,6 +60,7 @@ public class UserController : ControllerBase
         return Ok(response);
     }
 
+    // migrate to UserService.cs
     [Authorize]
     [HttpGet("user/{id}")]
     public async Task<ActionResult> GetUser(Guid Id)
