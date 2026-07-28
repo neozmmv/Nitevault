@@ -23,7 +23,22 @@ public class UserController : ControllerBase
     {
         JWTToken jwt = await _userService.Login(login);
         if(jwt.token.Length < 1) return Unauthorized(new {error = "Invalid login!"});
-        return Ok(jwt);
+        Response.Cookies.Append("jwt", jwt.token, new CookieOptions
+        {
+           HttpOnly = true,
+           Secure = true,
+           SameSite = SameSiteMode.Strict,
+           Expires = DateTime.UtcNow.AddMinutes(15)
+        });
+
+        Response.Cookies.Append("refresh-token", jwt.refresh, new CookieOptions
+        {
+           HttpOnly = true,
+           Secure = true,
+           SameSite = SameSiteMode.Strict,
+           Expires = DateTime.UtcNow.AddDays(7)
+        });
+        return Ok(new {message = "Login successful!"});
     }
 
     // migrate to UserService.cs
