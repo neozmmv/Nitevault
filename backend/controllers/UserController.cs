@@ -4,6 +4,7 @@ using nitevault.Dto;
 using nitevault.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Security.Authentication;
 
 
 [ApiController]
@@ -22,8 +23,14 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<JWTToken>> PostSign([FromBody] LoginRequest login)
     {
-        JWTToken jwt = await _userService.Login(login);
-        if(jwt.token.Length < 1) return Unauthorized(new {error = "Invalid login!"});
+        JWTToken jwt;
+        try
+        {
+            jwt = await _userService.Login(login);
+        } catch(InvalidCredentialException err)
+        {
+            return Unauthorized(new {error = err.Message});
+        }
         Response.Cookies.Append("jwt", jwt.token, new CookieOptions
         {
            HttpOnly = true,
