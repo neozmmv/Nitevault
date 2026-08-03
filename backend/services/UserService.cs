@@ -4,6 +4,7 @@ using nitevault.Dto;
 using nitevault.Models;
 using System.Text;
 using System.Security.Authentication;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 public class UserService
 {
@@ -39,5 +40,12 @@ public class UserService
         _db.RefreshTokens.Add(rt);
         await _db.SaveChangesAsync();
         return jwt;
+    }
+
+    public async Task<User> GetUser(Guid Id)
+    {
+        var user = await _db.Users.FindAsync(Id);
+        if(user is null) throw new NullReferenceException("User came as null!");
+        return user;
     }
 }

@@ -76,7 +76,6 @@ public class UserController : ControllerBase
         return Ok(response);
     }
 
-    // migrate to UserService.cs
     [Authorize]
     [HttpGet("user/{id}")]
     public async Task<ActionResult> GetUser(Guid Id)
@@ -86,8 +85,7 @@ public class UserController : ControllerBase
         {
             return Forbid();
         }
-        var user = await _db.Users.FindAsync(Id);
-        if(user is null) return NotFound();
+        var user = await _userService.GetUser(Id);
         return Ok(user);
     }
 
