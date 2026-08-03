@@ -53,8 +53,8 @@ public class UserController : ControllerBase
     [HttpPost("signUp")]
     public async Task<ActionResult> CreateUser([FromBody] CreateUser user)
     {
-        var existing = await _db.Users.FirstOrDefaultAsync(u => u.Email == user.email);
-        if(existing != null)
+        var exists = await _userService.ExistsUserWithEmail(user.email);
+        if(exists)
         {
             return Conflict(new {error = "Account with this email already exists!"});
         }
@@ -66,8 +66,8 @@ public class UserController : ControllerBase
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.password)
         };
 
-        _db.Add(u);
-        await _db.SaveChangesAsync();
+        await _userService.CreateUser(u);
+
         var response = new
         {
             u.Email,

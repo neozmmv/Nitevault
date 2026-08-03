@@ -48,4 +48,15 @@ public class UserService
         if(user is null) throw new NullReferenceException("User came as null!");
         return user;
     }
+
+    public async Task<bool> ExistsUserWithEmail(string email)
+    {
+        return await _db.Users.AnyAsync(u => u.Email == email);
+    }
+
+    public async Task<int> CreateUser(User user)
+    {
+        _db.Add(user);
+        return await _db.SaveChangesAsync();
+    }
 }

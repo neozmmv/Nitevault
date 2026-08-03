@@ -2,3 +2,4 @@ backend/bin
 backend/obj
 .direnv
 .env
+.vscode
