@@ -12,68 +12,10 @@ using System.Security.Authentication;
 public class UserController : ControllerBase
 {
     private readonly UserService _userService;
-    private readonly AppDbContext _db;
 
-    public UserController(AppDbContext db, UserService userService)
+    public UserController(UserService userService)
     {
-        _db = db;
         _userService = userService;
-    }
-
-    [HttpPost("login")]
-    public async Task<ActionResult<JWTToken>> PostSign([FromBody] LoginRequest login)
-    {
-        JWTToken jwt;
-        try
-        {
-            jwt = await _userService.Login(login);
-        } catch(InvalidCredentialException err)
-        {
-            return Unauthorized(new {error = err.Message});
-        }
-        Response.Cookies.Append("jwt", jwt.token, new CookieOptions
-        {
-           HttpOnly = true,
-           Secure = true,
-           SameSite = SameSiteMode.Strict,
-           Expires = DateTime.UtcNow.AddMinutes(15)
-        });
-
-        Response.Cookies.Append("refresh-token", jwt.refresh, new CookieOptions
-        {
-           HttpOnly = true,
-           Secure = true,
-           SameSite = SameSiteMode.Strict,
-           Expires = DateTime.UtcNow.AddDays(7)
-        });
-        return Ok(new {message = "Login successful!"});
-    }
-
-    // migrate to UserService.cs
-    [HttpPost("signUp")]
-    public async Task<ActionResult> CreateUser([FromBody] CreateUser user)
-    {
-        var exists = await _userService.ExistsUserWithEmail(user.email);
-        if(exists)
-        {
-            return Conflict(new {error = "Account with this email already exists!"});
-        }
-
-        User u = new User
-        {
-            Email = user.email,
-            Name = user.name,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.password)
-        };
-
-        await _userService.CreateUser(u);
-
-        var response = new
-        {
-            u.Email,
-            u.Name
-        };
-        return Ok(response);
     }
 
     [Authorize]
