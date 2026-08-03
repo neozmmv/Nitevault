@@ -43,8 +43,16 @@ public class JwtService
         RandomNumberGenerator.Fill(random);
         string refresh = Convert.ToBase64String(random);
 
-        string tokenString =  new JwtSecurityTokenHandler().WriteToken(token);
+        string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
         return new JWTToken(tokenString, refresh);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        byte[] random = new byte[64];
+        RandomNumberGenerator.Fill(random);
+        string refresh = Convert.ToBase64String(random);
+        return refresh;
     }
 }

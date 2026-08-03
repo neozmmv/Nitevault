@@ -56,7 +56,7 @@ public class UserService
 
     public async Task<int> CreateUser(User user)
     {
-        _db.Add(user);
+        _db.Users.Add(user);
         return await _db.SaveChangesAsync();
     }
 }
