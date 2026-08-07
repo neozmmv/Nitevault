@@ -1,21 +1,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using nitevault.Dto;
-using nitevault.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Security.Authentication;
-
 
 [ApiController]
 [Route("/api")]
 public class UserController : ControllerBase
 {
     private readonly UserService _userService;
+    private readonly RedisService _redis;
 
-    public UserController(UserService userService)
+    public UserController(UserService userService, RedisService redis)
     {
         _userService = userService;
+        _redis = redis;
     }
 
     [Authorize]
@@ -27,7 +25,13 @@ public class UserController : ControllerBase
         {
             return Forbid();
         }
+
         var user = await _userService.GetUser(Id);
+        if (user is null)
+        {
+            return NotFound();
+        }
+
         return Ok(user);
     }
 

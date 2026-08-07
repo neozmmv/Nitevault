@@ -5,6 +5,7 @@ using nitevault.Models;
 using System.Text;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.ComponentModel.DataAnnotations;
 
 public class UserService
 {
@@ -42,11 +43,29 @@ public class UserService
         return jwt;
     }
 
-    public async Task<User> GetUser(Guid Id)
+    public async Task<UserDTO?> GetUser(Guid Id)
     {
+        // try redis cache
+        string cacheKey = $"user:{Id}";
+        var cachedUser = await _redis.GetObjectAsync<UserDTO>(cacheKey);
+        
+        if (cachedUser is not null) {
+            return cachedUser;
+        }
+
         var user = await _db.Users.FindAsync(Id);
-        if(user is null) throw new NullReferenceException("User came as null!");
-        return user;
+        if(user is null) return null;
+        
+        UserDTO userToCache = new UserDTO(
+            Id: user.Id,
+            Email: user.Email,
+            Name: user.Name,
+            CreatedAt: user.CreatedAt,
+            Active: user.Active
+        );
+
+        await _redis.SetObjectAsync<UserDTO>(cacheKey, userToCache, TimeSpan.FromMinutes(5));
+        return userToCache;
     }
 
     public async Task<bool> ExistsUserWithEmail(string email)
