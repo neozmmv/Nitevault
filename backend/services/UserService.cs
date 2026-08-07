@@ -4,9 +4,6 @@ using nitevault.Dto;
 using nitevault.Models;
 using System.Text;
 using System.Security.Authentication;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.ComponentModel.DataAnnotations;
-
 public class UserService
 {
     private readonly AppDbContext _db;
@@ -17,30 +14,6 @@ public class UserService
         _db = db;
         _jwt = jwt;
         _redis = redis;
-    }
-
-    /// <summary>
-    /// Gets LoginRequest from UserController and handles token generation
-    /// </summary>
-    /// <param name="login"></param>
-    /// <returns>JWT Token</returns>
-    public async Task<JWTToken> Login(LoginRequest login)
-    {
-        User? user = await _db.Users.FirstOrDefaultAsync(u => u.Email == login.email);
-        if(user is null || !BCrypt.Net.BCrypt.Verify(login.password, user.PasswordHash)) throw new InvalidCredentialException("Invalid Login!");
-        JWTToken jwt = _jwt.GenerateToken(user.Id.ToString(), user.Email);
-        string refresh = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(jwt.refresh)));
-        
-        RefreshToken rt = new RefreshToken
-        {
-            UserId = user.Id,
-            TokenHash = refresh,
-            ExpiresAt = DateTime.UtcNow.AddDays(7)
-        };
-
-        _db.RefreshTokens.Add(rt);
-        await _db.SaveChangesAsync();
-        return jwt;
     }
 
     public async Task<UserDTO?> GetUser(Guid Id)
@@ -66,16 +39,5 @@ public class UserService
 
         await _redis.SetObjectAsync<UserDTO>(cacheKey, userToCache, TimeSpan.FromMinutes(5));
         return userToCache;
-    }
-
-    public async Task<bool> ExistsUserWithEmail(string email)
-    {
-        return await _db.Users.AnyAsync(u => u.Email == email);
-    }
-
-    public async Task<int> CreateUser(User user)
-    {
-        _db.Users.Add(user);
-        return await _db.SaveChangesAsync();
     }
 }

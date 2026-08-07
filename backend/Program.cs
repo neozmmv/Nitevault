@@ -32,6 +32,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddScoped<JwtService>(); // allow JwtService to be injected via DI
 builder.Services.AddScoped<UserService>(); // allow UserServices to be injected via DI
+builder.Services.AddScoped<AuthService>(); // AuthService via DI
 builder.Services.AddSingleton<RedisService>(); // redis service
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnection)); // redis
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(dbConnectionString)); // uses db context
