@@ -1,10 +1,14 @@
 # Nitevault
 
-`nix develop`
-`dotnet ef migrations add name`
-`dotnet ef database update`
+## Setup
 
-Telegram based storage
+`nix develop` # enter dev shell
+
+`docker compose up -d` # starts redis, postgres, and telegram-bot-api
+
+`dotnet ef migrations add <name>` # generate migration after model changes
+
+`dotnet ef database update` # apply migrations to db
 
 ## Routes
 
@@ -13,15 +17,15 @@ Most used backend routes for remembering:
 GET http://localhost:5172/api/user/{id}
 POST http://localhost:5172/api/auth/login {"email", "password"}
 POST http://localhost:5172/api/auth/refresh # sends cookies automatically
-
 ```
 
 ## Bot Routes
 
 ```
-http://localhost:8081/bot{bot-token}/getMe
-http://localhost:8081/bot{bot-token}/getUpdates
-http://localhost:8081/bot{bot-token}/sendMessage
+GET http://localhost:8081/bot{bot-token}/getMe
+GET http://localhost:8081/bot{bot-token}/getUpdates # use to discover chat_id after sending a message manually
+POST http://localhost:8081/bot{bot-token}/sendMessage {"chat_id", "text"}
+POST http://localhost:8081/bot{bot-token}/sendDocument # (Multi-part form with chat_id and document keys)
 ```
 
 ## Bot Setup
@@ -51,3 +55,7 @@ Put your bot name
 BotFather will give you a token
 
 Set the token as specified on .env.local
+
+## ⚠️ Security Notes
+
+If a bot token is ever exposed, revoke it immediately via @BotFather → /mybots → API Token → Revoke
