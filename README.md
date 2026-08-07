@@ -16,6 +16,14 @@ POST http://localhost:5172/api/auth/refresh # sends cookies automatically
 
 ```
 
+## Bot Routes
+
+```
+http://localhost:8081/bot{bot-token}/getMe
+http://localhost:8081/bot{bot-token}/getUpdates
+http://localhost:8081/bot{bot-token}/sendMessage
+```
+
 ## Bot Setup
 
 ### Step 1
