@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -33,9 +34,24 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<JwtService>(); // allow JwtService to be injected via DI
 builder.Services.AddScoped<UserService>(); // allow UserServices to be injected via DI
 builder.Services.AddScoped<AuthService>(); // AuthService via DI
+builder.Services.AddScoped<StorageService>(); // Storage Service DI
 builder.Services.AddSingleton<RedisService>(); // redis service
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnection)); // redis
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(dbConnectionString)); // uses db context
+
+// FOR DOCKERIZED IMAGE OF THIS PROJECT, USE CONTAINER NAME INSTEAD OF LOCALHOST.
+// localhost -> telegram-bot-api
+builder.Services.AddHttpClient<StorageService>(client =>
+{
+    client.BaseAddress = new Uri($"http://telegram-bot-api:8081/bot{Environment.GetEnvironmentVariable("BOT_TOKEN")}/");
+    client.Timeout = TimeSpan.FromMinutes(10);
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 2_100_000_000;
+});
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters

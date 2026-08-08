@@ -26,6 +26,7 @@ GET http://localhost:8081/bot{bot-token}/getMe
 GET http://localhost:8081/bot{bot-token}/getUpdates # use to discover chat_id after sending a message manually
 POST http://localhost:8081/bot{bot-token}/sendMessage {"chat_id", "text"}
 POST http://localhost:8081/bot{bot-token}/sendDocument # (Multi-part form with chat_id and document keys)
+GET http://localhost:8081/bot{bot-token}/getFile?file_id={file_id}
 ```
 
 ## Bot Setup
