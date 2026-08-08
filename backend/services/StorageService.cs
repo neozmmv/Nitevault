@@ -75,6 +75,13 @@ public class StorageService
        );
     }
 
+    public async Task GetUserFile(Guid userId)
+    {
+        // list files for each user
+        // not done yet
+        var userFiles = await _db.Files.Where(f => f.UserId == userId).ToListAsync();
+    }
+
     public async Task<FileDownloadInfo?> GetFileForDownloadAsync(Guid fileId, Guid userId)
     {
         var file = await _db.Files
