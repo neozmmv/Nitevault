@@ -12,4 +12,4 @@ WORKDIR /app
 COPY --from=build /app .
 
 EXPOSE 8080
-ENTRYPOINT ["dotnet", "nitevault.dll"]
+ENTRYPOINT ["dotnet", "Nitevault.dll"]

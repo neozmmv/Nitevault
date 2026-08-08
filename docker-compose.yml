@@ -20,6 +20,13 @@ services:
       - postgres
       - redis
       - telegram-bot-api
+    develop:
+      watch:
+        - action: rebuild
+          path: ./backend
+          ignore:
+            - backend/bin/
+            - backend/obj/
     restart: unless-stopped
 
   redis:
