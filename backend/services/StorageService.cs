@@ -50,6 +50,7 @@ public class StorageService
     {
        using var content = new MultipartFormDataContent();
        content.Add(new StringContent(_storageChatId.ToString()), "chat_id");
+       content.Add(new StringContent("true"), "disable_content_type_detection"); // forces document
 
        var fileContent = new StreamContent(fileStream);
        content.Add(fileContent, "document", fileName);
