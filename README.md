@@ -17,6 +17,9 @@ Most used backend routes for remembering:
 GET http://localhost:5172/api/user/{id}
 POST http://localhost:5172/api/auth/login {"email", "password"}
 POST http://localhost:5172/api/auth/refresh # sends cookies automatically
+GET http://localhost:5172/api/storage/file/{file-id}
+GET http://localhost:5172/api/storage/download/{file-id}
+POST http://localhost:5172/api/storage/upload # multipart-form {"file"}
 ```
 
 ## Bot Routes

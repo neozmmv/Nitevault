@@ -1,6 +1,3 @@
-
-
-using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using nitevault.Dto;
@@ -56,5 +53,16 @@ public class StorageController : ControllerBase
         var userId = User.GetAuthorizedTokenOwner();
         FileEntity? file = await _storage.GetFileById(fileId, userId);
         return Ok(file);
+    }
+
+    [Authorize]
+    [HttpDelete("file/{fileId}")]
+    public async Task<ActionResult> DeleteFile(Guid fileId)
+    {
+        var userId = User.GetAuthorizedTokenOwner();
+        bool deleted = await _storage.DeleteFile(fileId, userId);
+        if (!deleted) return NotFound();
+
+        return NoContent();
     }
 }

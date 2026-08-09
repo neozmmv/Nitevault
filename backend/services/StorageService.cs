@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using nitevault.Dto;
@@ -83,7 +82,7 @@ public class StorageService
 
     public async Task<FileEntity?> GetFileById(Guid fileId, Guid userId)
     {
-        FileEntity? file = await _db.Files.FirstOrDefaultAsync(f => f.Id == fileId && f.UserId == userId);
+        FileEntity? file = await _db.Files.Include(f => f.Parts).FirstOrDefaultAsync(f => f.Id == fileId && f.UserId == userId);
         return file;
     }
 
@@ -117,5 +116,30 @@ public class StorageService
         if(result is null || !result.Ok) throw new Exception("Failed to get the file info from Telegram!");
 
         return result.Result.FilePath;
+    }
+
+    public async Task<bool> DeleteFile(Guid fileId, Guid userId)
+    {
+        FileEntity? file = await GetFileById(fileId, userId);
+        if (file is null) return false;
+
+        foreach (var part in file.Parts)
+        {
+            var response = await _botClient.PostAsJsonAsync("deleteMessage", new
+            {
+                chat_id = part.ChatId,
+                message_id = part.MessageId
+            });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Telegram API Error: {errorBody}");
+            }
+        }
+
+        _db.Files.Remove(file);
+        await _db.SaveChangesAsync();
+        return true;
     }
 }
