@@ -17,16 +17,16 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("{id}")]
-    public async Task<ActionResult> GetUser(Guid Id)
+    [HttpGet("{userId}")]
+    public async Task<ActionResult> GetUser(Guid userId)
     {
         var tokenOwner = User.GetAuthorizedTokenOwner();
-        if(Id != tokenOwner)
+        if(userId != tokenOwner)
         {
             return Forbid();
         }
 
-        var user = await _userService.GetUser(Id);
+        var user = await _userService.GetUser(userId);
         if (user is null)
         {
             return NotFound();
@@ -35,12 +35,12 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-    [HttpGet("me")]
     [Authorize]
-    public ActionResult UserInfo()
+    [HttpGet("me")]
+    public async Task<ActionResult> UserInfo()
     {
-        // gets id from Authorize
-        string? id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return Ok(new {id});
+        var userId = User.GetAuthorizedTokenOwner();
+        UserDTO? user = await _userService.GetUser(userId);
+        return Ok(user);
     }
 }
