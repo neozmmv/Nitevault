@@ -39,4 +39,22 @@ public class StorageController : ControllerBase
         Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{result.fileName}\"");
         return File(result.stream, result.contentType);
     }
+
+    [Authorize]
+    [HttpGet("list")]
+    public async Task<ActionResult> ListFiles()
+    {
+        var userId = User.GetAuthorizedTokenOwner();
+        var fileList = await _storage.GetUserFiles(userId);
+        return Ok(fileList);
+    }
+
+    [Authorize]
+    [HttpGet("file/{fileId}")]
+    public async Task<ActionResult> FileInfo(Guid fileId)
+    {
+        var userId = User.GetAuthorizedTokenOwner();
+        FileEntity? file = await _storage.GetFileById(fileId, userId);
+        return Ok(file);
+    }
 }

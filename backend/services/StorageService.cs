@@ -75,11 +75,16 @@ public class StorageService
        );
     }
 
-    public async Task GetUserFile(Guid userId)
+    public async Task<List<FileEntity>> GetUserFiles(Guid userId)
     {
-        // list files for each user
-        // not done yet
         var userFiles = await _db.Files.Where(f => f.UserId == userId).ToListAsync();
+        return userFiles;
+    }
+
+    public async Task<FileEntity?> GetFileById(Guid fileId, Guid userId)
+    {
+        FileEntity? file = await _db.Files.FirstOrDefaultAsync(f => f.Id == fileId && f.UserId == userId);
+        return file;
     }
 
     public async Task<FileDownloadInfo?> GetFileForDownloadAsync(Guid fileId, Guid userId)
