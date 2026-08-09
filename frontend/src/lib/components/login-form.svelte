@@ -3,28 +3,50 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { FieldGroup, Field, FieldLabel, FieldDescription } from "$lib/components/ui/field/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
+	import { login } from "$lib/api/auth";
+	import { goto } from "$app/navigation";
 
 	const id = $props.id();
+
+	let error = $state("");
+
+	async function handleSubmit(e: SubmitEvent) {
+		e.preventDefault();
+		const form = e.target as HTMLFormElement;
+		const data = new FormData(form);
+
+		try {
+			await login(data.get("email") as string, data.get("password") as string)
+			await goto("/");
+		} catch {
+			error = "Invalid Credentials";
+		}
+	}
 </script>
 
 <Card.Root class="mx-auto w-full max-w-sm">
 	<Card.Header>
 		<Card.Title class="text-2xl">Login</Card.Title>
-		<Card.Description>Enter your email below to login to your account</Card.Description>
+		<Card.Description>Enter your email below to login to Nitevault</Card.Description>
 	</Card.Header>
+	{#if error}
+		<Card.Content>
+			<p class="text-red-500">{error}</p>
+		</Card.Content>
+	{/if}
 	<Card.Content>
-		<form>
+		<form method="POST" onsubmit={handleSubmit}>
 			<FieldGroup>
 				<Field>
 					<FieldLabel for="email-{id}">Email</FieldLabel>
-					<Input id="email-{id}" type="email" placeholder="m@example.com" required />
+					<Input id="email-{id}" type="email" placeholder="m@example.com" required name="email" />
 				</Field>
 				<Field>
 					<div class="flex items-center">
 						<FieldLabel for="password-{id}">Password</FieldLabel>
 						<!-- <a href="##" class="ms-auto inline-block text-sm underline"> Forgot your password? </a> -->
 					</div>
-					<Input id="password-{id}" type="password" required />
+					<Input id="password-{id}" type="password" required name="password" />
 				</Field>
 				<Field>
 					<Button type="submit" class="w-full cursor-pointer">Login</Button>

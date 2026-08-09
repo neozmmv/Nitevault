@@ -2,9 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using nitevault.Dto;
 using System.Security.Authentication;
 using nitevault.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("/api/auth")]
@@ -109,5 +107,12 @@ public class AuthController : ControllerBase
         });
 
         return Ok(new {message = "Successfully refreshed the session."});
+    }
+
+    [HttpGet("checkAuth")]
+    [Authorize]
+    public ActionResult CheckAuth()
+    {
+        return Ok(new{auth = true});
     }
 }

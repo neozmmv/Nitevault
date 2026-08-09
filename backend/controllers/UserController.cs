@@ -4,7 +4,7 @@ using nitevault.Dto;
 using System.Security.Claims;
 
 [ApiController]
-[Route("/api")]
+[Route("/api/user")]
 public class UserController : ControllerBase
 {
     private readonly UserService _userService;
@@ -17,7 +17,7 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("user/{id}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult> GetUser(Guid Id)
     {
         var tokenOwner = User.GetAuthorizedTokenOwner();
@@ -33,13 +33,6 @@ public class UserController : ControllerBase
         }
 
         return Ok(user);
-    }
-
-    [HttpGet("checkAuth")]
-    [Authorize]
-    public ActionResult CheckAuth()
-    {
-        return Ok(new{auth = true});
     }
 
     [HttpGet("me")]
