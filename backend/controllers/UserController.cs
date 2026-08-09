@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using nitevault.Dto;
-using System.Security.Claims;
 
 [ApiController]
 [Route("/api/user")]

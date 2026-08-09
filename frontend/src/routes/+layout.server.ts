@@ -1,5 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
+import type User from "$lib/interfaces/user";
 
 const PUBLIC_ROUTES = ["/login", "/signUp"];
 
@@ -36,14 +37,13 @@ export const load: LayoutServerLoad = async ({ fetch, cookies, url }) => {
         return {};
     }
 
-    // maybe /user/me instead...
-
-    const res = await fetch("http://localhost:5172/api/auth/checkAuth", {
+    const res = await fetch("http://localhost:5172/api/user/me", {
         headers: { cookie: `jwt=${sessionCookie}` }
     });
 
     if (!res.ok) redirect(303, "/login");
+    const userData = await res.json() as User;
     if (isPublicRoute) redirect(303, "/");
 
-    return {};
+    return {userData};
 };
