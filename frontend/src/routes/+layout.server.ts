@@ -15,7 +15,10 @@ export const load: LayoutServerLoad = async ({ fetch, cookies, url }) => {
                 headers: { cookie: `refresh-token=${refreshToken}` }
             });
 
-            if (!res.ok) redirect(303, "/login");
+            if (!res.ok) {
+                if (!isPublicRoute) redirect(303, "/login");
+                return {};
+            }
 
             const setCookies = res.headers.getSetCookie();
             for (const rawCookie of setCookies) {
@@ -41,9 +44,13 @@ export const load: LayoutServerLoad = async ({ fetch, cookies, url }) => {
         headers: { cookie: `jwt=${sessionCookie}` }
     });
 
-    if (!res.ok) redirect(303, "/login");
-    const userData = await res.json() as User;
+    if (!res.ok) {
+        if (!isPublicRoute) redirect(303, "/login");
+        return {};
+    }
+
     if (isPublicRoute) redirect(303, "/");
 
-    return {userData};
+    const userData = await res.json() as User;
+    return { userData };
 };

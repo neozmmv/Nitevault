@@ -11,134 +11,102 @@
 	import SquareTerminalIcon from "@lucide/svelte/icons/square-terminal";
 
 	// This is sample data.
-	const data = {
+	/* const data = {
 		user: {
 			name: "shadcn",
 			email: "m@example.com",
 			avatar: "/avatars/shadcn.jpg",
 		},
-		teams: [
-			{
-				name: "Acme Inc",
-				logo: GalleryVerticalEndIcon,
-				plan: "Enterprise",
-			},
-			{
-				name: "Acme Corp.",
-				logo: AudioWaveformIcon,
-				plan: "Startup",
-			},
-			{
-				name: "Evil Corp.",
-				logo: CommandIcon,
-				plan: "Free",
-			},
-		],
-		navMain: [
-			{
-				title: "Playground",
-				url: "#",
-				icon: SquareTerminalIcon,
-				isActive: true,
-				items: [
-					{
-						title: "History",
-						url: "#",
-					},
-					{
-						title: "Starred",
-						url: "#",
-					},
-					{
-						title: "Settings",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Models",
-				url: "#",
-				icon: BotIcon,
-				items: [
-					{
-						title: "Genesis",
-						url: "#",
-					},
-					{
-						title: "Explorer",
-						url: "#",
-					},
-					{
-						title: "Quantum",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Documentation",
-				url: "#",
-				icon: BookOpenIcon,
-				items: [
-					{
-						title: "Introduction",
-						url: "#",
-					},
-					{
-						title: "Get Started",
-						url: "#",
-					},
-					{
-						title: "Tutorials",
-						url: "#",
-					},
-					{
-						title: "Changelog",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Settings",
-				url: "#",
-				icon: Settings2Icon,
-				items: [
-					{
-						title: "General",
-						url: "#",
-					},
-					{
-						title: "Team",
-						url: "#",
-					},
-					{
-						title: "Billing",
-						url: "#",
-					},
-					{
-						title: "Limits",
-						url: "#",
-					},
-				],
-			},
-		],
-		projects: [
-			{
-				name: "Design Engineering",
-				url: "#",
-				icon: FrameIcon,
-			},
-			{
-				name: "Sales & Marketing",
-				url: "#",
-				icon: ChartPieIcon,
-			},
-			{
-				name: "Travel",
-				url: "#",
-				icon: MapIcon,
-			},
-		],
-	};
+	}; */
+
+
+	const navMain = [
+		{
+			title: "Playground",
+			url: "#",
+			icon: SquareTerminalIcon,
+			isActive: true,
+			items: [
+				{
+					title: "History",
+					url: "#",
+				},
+				{
+					title: "Starred",
+					url: "#",
+				},
+				{
+					title: "Settings",
+					url: "#",
+				},
+			],
+		},
+		{
+			title: "Models",
+			url: "#",
+			icon: BotIcon,
+			items: [
+				{
+					title: "Genesis",
+					url: "#",
+				},
+				{
+					title: "Explorer",
+					url: "#",
+				},
+				{
+					title: "Quantum",
+					url: "#",
+				},
+			],
+		},
+		{
+			title: "Documentation",
+			url: "#",
+			icon: BookOpenIcon,
+			items: [
+				{
+					title: "Introduction",
+					url: "#",
+				},
+				{
+					title: "Get Started",
+					url: "#",
+				},
+				{
+					title: "Tutorials",
+					url: "#",
+				},
+				{
+					title: "Changelog",
+					url: "#",
+				},
+			],
+		},
+		{
+			title: "Settings",
+			url: "#",
+			icon: Settings2Icon,
+			items: [
+				{
+					title: "General",
+					url: "#",
+				},
+				{
+					title: "Team",
+					url: "#",
+				},
+				{
+					title: "Billing",
+					url: "#",
+				},
+				{
+					title: "Limits",
+					url: "#",
+				},
+			],
+		},
+	]
 </script>
 
 <script lang="ts">
@@ -148,24 +116,23 @@
 	import NavUser from "./nav-user.svelte";
 	import TeamSwitcher from "./team-switcher.svelte";
 	import type { ComponentProps } from "svelte";
+	import type User from "$lib/interfaces/user";
+
 
 	let {
 		ref = $bindable(null),
 		collapsible = "icon",
+		user,
 		...restProps
-	}: ComponentProps<typeof Sidebar.Root> = $props();
+	}: ComponentProps<typeof Sidebar.Root> & { user: User } = $props();
 </script>
 
 <Sidebar.Root bind:ref {collapsible} {...restProps}>
-	<Sidebar.Header>
-		<TeamSwitcher teams={data.teams} />
-	</Sidebar.Header>
 	<Sidebar.Content>
-		<NavMain items={data.navMain} />
-		<NavProjects projects={data.projects} />
+		<NavMain items={navMain} />
 	</Sidebar.Content>
 	<Sidebar.Footer>
-		<NavUser user={data.user} />
+		<NavUser user={user} />
 	</Sidebar.Footer>
 	<Sidebar.Rail />
 </Sidebar.Root>

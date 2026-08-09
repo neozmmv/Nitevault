@@ -10,7 +10,7 @@
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
 
-	let { user }: { user: { name: string; email: string; avatar: string } } = $props();
+	let { user }: { user: { name: string; email: string; avatar?: string } } = $props();
 	const sidebar = useSidebar();
 </script>
 

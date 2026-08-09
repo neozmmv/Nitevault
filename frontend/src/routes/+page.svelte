@@ -4,10 +4,13 @@
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import AppSidebar from "$lib/components/app-sidebar.svelte";
+	import type { PageData } from "./$types";
+
+    let { data }: {data: PageData} = $props()
 </script>
 
 <Sidebar.Provider>
-	<AppSidebar />
+	<AppSidebar user={data.userData!} />
 	<Sidebar.Inset>
 		<header
 			class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
