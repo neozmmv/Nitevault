@@ -72,7 +72,7 @@ services:
       - telegram_bot_api_data:/var/lib/telegram-bot-api
     entrypoint: >
       sh -c "while true; do
-        find /var/lib/telegram-bot-api -type f -mtime +1 -delete;
+        find /var/lib/telegram-bot-api -type f -mmin +1440 -delete;
         sleep 86400;
       done"
     restart: unless-stopped

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
@@ -76,6 +77,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
             return Task.CompletedTask;
         }
     };
+});
+
+builder.Services.Configure<FormOptions>(options =>
+{
+   options.MultipartBodyLengthLimit = 2_100_000_000; 
 });
 
 builder.Services.AddAuthorization();
