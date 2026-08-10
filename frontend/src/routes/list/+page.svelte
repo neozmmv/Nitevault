@@ -10,6 +10,8 @@
     import type FileItem from "$lib/interfaces/file";
     import { formatFileSize, formatDate } from "$lib/utils/format";
     import { Button } from "$lib/components/ui/button/index.js";
+    import Trash2 from "@lucide/svelte/icons/trash-2";
+	import { fetchFiles } from "$lib/utils/storage";
 
     let files = $state<FileItem[]>([]);
 
@@ -37,22 +39,14 @@
         }
     }
 
-    const fetchFiles = async () => {
-        try {
-            // change localhost to container name on dockerized
-            const res = await fetch("http://localhost:5172/api/storage/list", { credentials: "include" });
-            if (!res.ok) {
-                console.error('Failed to fetch files:', res.status);
-                return;
-            }
-            files = await res.json();
-        } catch (err) {
-            console.error('Failed to fetch files:', err);
-        }
-    }
-
     $effect(() => {
-        fetchFiles();
+        async function load() {
+            const result = await fetchFiles();
+            if (result) {
+                files = result;
+            }
+        }
+        load();
     });
 
     let { data }: { data: PageData } = $props();
@@ -104,7 +98,9 @@
                                 <Table.Cell>{file.contentType}</Table.Cell>
                                 <Table.Cell>{formatFileSize(file.totalSize)}</Table.Cell>
                                 <Table.Cell>{formatDate(file.createdAt)}</Table.Cell>
-                                <Table.Cell class="text-end"><Button class="cursor-pointer" onclick={() => downloadFile(file.id, file.originalFileName)}>Download</Button></Table.Cell>
+                                <Table.Cell class="text-end">
+                                    <Button class="cursor-pointer" onclick={() => downloadFile(file.id, file.originalFileName)}>Download</Button>
+                                </Table.Cell>
                             </Table.Row>
                         {/each}
                     </Table.Body>

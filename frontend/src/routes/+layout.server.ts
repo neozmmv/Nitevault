@@ -7,21 +7,32 @@ const PUBLIC_ROUTES = ["/login", "/signUp"];
 
 async function tryRefresh(fetch: typeof globalThis.fetch, cookies: Cookies, refreshToken: string) {
     const res = await fetch("http://localhost:5172/api/auth/refresh", {
-        headers: { cookie: `refresh-token=${refreshToken}` }
+        headers: { cookie: `refresh-token=${refreshToken}` },
+        method: "POST"
     });
 
     if (!res.ok) return false;
 
-    const setCookies = res.headers.getSetCookie();
-    for (const rawCookie of setCookies) {
-        const [nameValue] = rawCookie.split(';');
-        const [name, value] = nameValue.split('=');
-        cookies.set(name.trim(), value.trim(), {
-            path: '/',
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict'
-        });
+    try {
+        const setCookies = res.headers.getSetCookie();
+        console.log('[tryRefresh] setCookies:', setCookies);
+
+        for (const rawCookie of setCookies) {
+            const [nameValue] = rawCookie.split(';');
+            const eqIndex = nameValue.indexOf('=');
+            const name = nameValue.slice(0, eqIndex).trim();
+            const value = nameValue.slice(eqIndex + 1).trim();
+            console.log('[tryRefresh] setting cookie:', name, value.slice(0, 20));
+            cookies.set(name, value, {
+                path: '/',
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict'
+            });
+        }
+    } catch (err) {
+        console.error('[tryRefresh] ERROR parsing cookies:', err);
+        return false;
     }
 
     return true;
