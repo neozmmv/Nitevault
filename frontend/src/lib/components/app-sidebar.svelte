@@ -22,26 +22,22 @@
 
 	const navMain = [
 		{
-			title: "Playground",
-			url: "#",
+			title: "Files",
+			url: "/files",
 			icon: SquareTerminalIcon,
 			isActive: true,
 			items: [
 				{
-					title: "History",
-					url: "#",
+					title: "List Files",
+					url: "/list"
 				},
 				{
-					title: "Starred",
-					url: "#",
-				},
-				{
-					title: "Settings",
-					url: "#",
-				},
-			],
+					title: "Upload Files",
+					url: "/upload"
+				}
+			]
 		},
-		{
+		/* {
 			title: "Models",
 			url: "#",
 			icon: BotIcon,
@@ -105,7 +101,7 @@
 					url: "#",
 				},
 			],
-		},
+		}, */
 	]
 </script>
 

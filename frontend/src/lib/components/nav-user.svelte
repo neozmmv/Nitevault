@@ -62,14 +62,14 @@
 					</div>
 				</DropdownMenu.Label>
 				<DropdownMenu.Separator />
-				<DropdownMenu.Group>
+				<!-- <DropdownMenu.Group>
 					<DropdownMenu.Item>
 						<SparklesIcon />
 						Upgrade to Pro
 					</DropdownMenu.Item>
-				</DropdownMenu.Group>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Group>
+				</DropdownMenu.Group> -->
+				<!-- <DropdownMenu.Separator /> -->
+				<!-- <DropdownMenu.Group>
 					<DropdownMenu.Item>
 						<BadgeCheckIcon />
 						Account
@@ -82,9 +82,9 @@
 						<BellIcon />
 						Notifications
 					</DropdownMenu.Item>
-				</DropdownMenu.Group>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Item onclick={handleLogout}>
+				</DropdownMenu.Group> -->
+				<!-- <DropdownMenu.Separator /> -->
+				<DropdownMenu.Item onclick={handleLogout} class="cursor-pointer">
 					<LogOutIcon />
 					Log out
 				</DropdownMenu.Item>
