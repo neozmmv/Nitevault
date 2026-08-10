@@ -3,6 +3,7 @@ using nitevault.Dto;
 using System.Security.Authentication;
 using nitevault.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 [ApiController]
 [Route("/api/auth")]
@@ -133,6 +134,37 @@ public class AuthController : ControllerBase
         });
 
         return Ok(new {message = "Successfully refreshed the session."});
+    }
+
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<ActionResult> LogOut()
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Path = "/"
+        };
+
+        // revoke refresh token
+        string? rf = Request.Cookies["refresh-token"];
+        if (rf is not null)
+        {
+            try
+            {
+                await _auth.RevokeRefreshToken(rf);
+            } catch (InvalidCredentialException)
+            {
+                //
+            }
+        }
+
+        Response.Cookies.Delete("jwt", cookieOptions);
+        Response.Cookies.Delete("refresh-token", cookieOptions);
+
+        return Ok();
     }
 
     [HttpGet("checkAuth")]

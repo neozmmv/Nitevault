@@ -26,3 +26,13 @@ export async function signUp(name: string, email: string, password: string) {
 
     if (!res.ok) throw new Error("Error while creating account.");
 }
+
+export async function logout() {
+    const res = await fetch("http://localhost:5172/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type" : "application/json" },
+        credentials: "include"
+    })
+
+    if (!res.ok) throw new Error("Logout error!")
+}

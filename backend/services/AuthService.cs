@@ -81,6 +81,25 @@ public class AuthService
         return newToken;
     }
 
+    public async Task RevokeRefreshToken(string refreshToken)
+    {
+        string hashedToken = HashToken(refreshToken);
+
+        var storedToken = await _db.RefreshTokens
+            .Include(t => t.User)
+            .FirstOrDefaultAsync(t => t.TokenHash == hashedToken);
+
+        if (storedToken is null || storedToken.ExpiresAt < DateTime.UtcNow || storedToken.Revoked)
+            throw new InvalidCredentialException("Invalid refresh token!");
+
+        User user = storedToken.User;
+
+        // invalidate used token
+        storedToken.Revoked = true;
+
+        await _db.SaveChangesAsync();
+    }
+
     private static string HashToken(string token)
     {
         return Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
