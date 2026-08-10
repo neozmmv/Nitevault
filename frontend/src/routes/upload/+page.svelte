@@ -27,7 +27,7 @@
 							</Breadcrumb.Item>
 							<Breadcrumb.Separator class="hidden md:block" />
 							<Breadcrumb.Item>
-								<Breadcrumb.Page>List Files</Breadcrumb.Page>
+								<Breadcrumb.Page>Upload Files</Breadcrumb.Page>
 							</Breadcrumb.Item>
 						</Breadcrumb.List>
 					</Breadcrumb.Root>

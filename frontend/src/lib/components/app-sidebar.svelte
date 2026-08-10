@@ -9,6 +9,7 @@
 	import MapIcon from "@lucide/svelte/icons/map";
 	import Settings2Icon from "@lucide/svelte/icons/settings-2";
 	import SquareTerminalIcon from "@lucide/svelte/icons/square-terminal";
+	import FolderOpen from '@lucide/svelte/icons/folder-open';
 
 	// This is sample data.
 	/* const data = {
@@ -24,7 +25,7 @@
 		{
 			title: "Files",
 			url: "/files",
-			icon: SquareTerminalIcon,
+			icon: FolderOpen,
 			isActive: true,
 			items: [
 				{
