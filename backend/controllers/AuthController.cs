@@ -58,6 +58,11 @@ public class AuthController : ControllerBase
             return Conflict(new {error = "Account with this email already exists!"});
         }
 
+        if(user.password.Length < 8)
+        {
+            return BadRequest(new {error = "Password should be at least 8 characters long!"});
+        }
+
         User u = new User
         {
             Email = user.email,

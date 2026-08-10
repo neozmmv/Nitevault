@@ -23,7 +23,7 @@
 			await signUp(name, email, password);
 			await goto("/");
 		} catch {
-			error = "Something went wrong while creating your account!";
+			error = "Something went wrong while creating your account! Make sure your password is at least 8 characters long!";
 		}
 	}
 </script>
