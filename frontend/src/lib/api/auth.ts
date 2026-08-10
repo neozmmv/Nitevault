@@ -13,3 +13,16 @@ export async function login(email: string, password: string) {
 
     if (!res.ok) throw new Error("Invalid Credentials");
 }
+
+export async function signUp(name: string, email: string, password: string) {
+    const res = await fetch("http://localhost:5172/api/auth/signUp",
+        {
+            method: "POST",
+            headers: { "Content-Type" : "application/json" },
+            body: JSON.stringify({name, email, password}),
+            credentials: "include"
+        }
+    );
+
+    if (!res.ok) throw new Error("Error while creating account.");
+}

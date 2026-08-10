@@ -71,6 +71,32 @@ public class AuthController : ControllerBase
             u.Email,
             u.Name
         };
+
+        // login after creating user
+        JWTToken jwt;
+        try
+        {
+            jwt = await _auth.Login(new LoginRequest(user.email, user.password));
+        } catch(InvalidCredentialException)
+        {
+            return Unauthorized();
+        }
+
+        Response.Cookies.Append("jwt", jwt.token, new CookieOptions
+        {
+           HttpOnly = true,
+           Secure = true,
+           SameSite = SameSiteMode.Strict,
+           Expires = DateTime.UtcNow.AddMinutes(15)
+        });
+
+        Response.Cookies.Append("refresh-token", jwt.refresh, new CookieOptions
+        {
+           HttpOnly = true,
+           Secure = true,
+           SameSite = SameSiteMode.Strict,
+           Expires = DateTime.UtcNow.AddDays(7)
+        });
         return Ok(response);
     }
 
