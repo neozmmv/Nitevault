@@ -13,3 +13,11 @@ export const fetchFiles = async (): Promise<FileItem[] | undefined> => {
         return undefined;
     }
 }
+
+export async function deleteFile(fileId: string) {
+    const res = await fetch(`http://localhost:5172/api/storage/file/${fileId}`, { method: "DELETE", credentials: "include"})
+    if(!res.ok) {
+        console.error("Failed to delete file: ", res.status)
+    }
+    return res.status;
+}

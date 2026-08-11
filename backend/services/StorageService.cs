@@ -6,12 +6,14 @@ public class StorageService
 {
     private readonly HttpClient _botClient;
     private readonly AppDbContext _db;
+    private readonly ILogger _logger;
     private readonly long _storageChatId;
 
-    public StorageService(HttpClient botClient, AppDbContext db)
+    public StorageService(HttpClient botClient, AppDbContext db, ILogger logger)
     {
         _botClient = botClient;
         _db = db;
+        _logger = logger;
 
         var chatIdValue = Environment.GetEnvironmentVariable("CHAT_ID");
         if (string.IsNullOrEmpty(chatIdValue)) throw new InvalidOperationException("Could not read CHAT_ID from env file!");
@@ -134,7 +136,11 @@ public class StorageService
             if (!response.IsSuccessStatusCode)
             {
                 var errorBody = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Telegram API Error: {errorBody}");
+                //throw new Exception($"Telegram API Error: {errorBody}"); // we dont care anymore
+                _logger.LogWarning(
+                    "Failed to delete Telegram message {MessageId} for file {FileId}: {Error}",
+                    part.MessageId, fileId, errorBody
+                );
             }
         }
 

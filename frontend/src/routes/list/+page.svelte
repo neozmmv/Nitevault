@@ -11,7 +11,9 @@
     import { formatFileSize, formatDate } from "$lib/utils/format";
     import { Button } from "$lib/components/ui/button/index.js";
     import Trash2 from "@lucide/svelte/icons/trash-2";
+    import Download from "@lucide/svelte/icons/download"
 	import { fetchFiles } from "$lib/utils/storage";
+    import { deleteFile } from "$lib/utils/storage";
 
     let files = $state<FileItem[]>([]);
 
@@ -88,7 +90,7 @@
                             <Table.Head>Type</Table.Head>
                             <Table.Head>Size</Table.Head>
                             <Table.Head>Created At</Table.Head>
-                            <Table.Head class="text-end">Download</Table.Head>
+                            <Table.Head class="text-end">Actions</Table.Head>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -99,7 +101,24 @@
                                 <Table.Cell>{formatFileSize(file.totalSize)}</Table.Cell>
                                 <Table.Cell>{formatDate(file.createdAt)}</Table.Cell>
                                 <Table.Cell class="text-end">
-                                    <Button class="cursor-pointer" onclick={() => downloadFile(file.id, file.originalFileName)}>Download</Button>
+                                    <div class="flex justify-end gap-2">
+                                        <Button
+                                            size="icon"
+                                            variant="outline"
+                                            class="cursor-pointer"
+                                            onclick={() => downloadFile(file.id, file.originalFileName)}
+                                        >
+                                            <Download class="size-4" />
+                                        </Button>
+                                        <Button
+                                            size="icon"
+                                            variant="destructive"
+                                            class="cursor-pointer"
+                                            onclick={() => deleteFile(file.id)}
+                                        >
+                                            <Trash2 class="size-4" />
+                                        </Button>
+                                    </div>
                                 </Table.Cell>
                             </Table.Row>
                         {/each}
