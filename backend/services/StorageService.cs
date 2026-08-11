@@ -9,7 +9,7 @@ public class StorageService
     private readonly ILogger _logger;
     private readonly long _storageChatId;
 
-    public StorageService(HttpClient botClient, AppDbContext db, ILogger logger)
+    public StorageService(HttpClient botClient, AppDbContext db, ILogger<StorageService> logger)
     {
         _botClient = botClient;
         _db = db;
