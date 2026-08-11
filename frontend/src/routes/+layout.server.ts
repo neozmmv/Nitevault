@@ -1,85 +1,83 @@
-import { redirect } from "@sveltejs/kit";
-import type { LayoutServerLoad } from "./$types";
-import type User from "$lib/interfaces/user";
-import type { Cookies } from "@sveltejs/kit";
+import { redirect } from '@sveltejs/kit';
+import type { LayoutServerLoad } from './$types';
+import type User from '$lib/interfaces/user';
+import type { Cookies } from '@sveltejs/kit';
 
-const PUBLIC_ROUTES = ["/login", "/signUp"];
+const PUBLIC_ROUTES = ['/login', '/signUp'];
 
 async function tryRefresh(fetch: typeof globalThis.fetch, cookies: Cookies, refreshToken: string) {
-    const res = await fetch("http://localhost:5172/api/auth/refresh", {
-        headers: { cookie: `refresh-token=${refreshToken}` },
-        method: "POST"
-    });
+	const res = await fetch('http://localhost:5172/api/auth/refresh', {
+		headers: { cookie: `refresh-token=${refreshToken}` },
+		method: 'POST'
+	});
 
-    if (!res.ok) return false;
+	if (!res.ok) return false;
 
-    try {
-        const setCookies = res.headers.getSetCookie();
-        console.log('[tryRefresh] setCookies:', setCookies);
+	try {
+		const setCookies = res.headers.getSetCookie();
 
-        for (const rawCookie of setCookies) {
-            const [nameValue] = rawCookie.split(';');
-            const eqIndex = nameValue.indexOf('=');
-            const name = nameValue.slice(0, eqIndex).trim();
-            const value = nameValue.slice(eqIndex + 1).trim();
-            console.log('[tryRefresh] setting cookie:', name, value.slice(0, 20));
-            cookies.set(name, value, {
-                path: '/',
-                httpOnly: true,
-                secure: true,
-                sameSite: 'strict'
-            });
-        }
-    } catch (err) {
-        console.error('[tryRefresh] ERROR parsing cookies:', err);
-        return false;
-    }
+		for (const rawCookie of setCookies) {
+			const [nameValue] = rawCookie.split(';');
+			const eqIndex = nameValue.indexOf('=');
+			const name = nameValue.slice(0, eqIndex).trim();
+			const value = nameValue.slice(eqIndex + 1).trim();
+			cookies.set(name, value, {
+				path: '/',
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict'
+			});
+		}
+	} catch (err) {
+		console.error('ERROR parsing cookies:', err);
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 export const load: LayoutServerLoad = async ({ fetch, cookies, url }) => {
-    const isPublicRoute = PUBLIC_ROUTES.includes(url.pathname);
-    let sessionCookie = cookies.get("jwt");
-    const refreshToken = cookies.get("refresh-token");
+	const isPublicRoute = PUBLIC_ROUTES.includes(url.pathname);
+	let sessionCookie = cookies.get('jwt');
+	const refreshToken = cookies.get('refresh-token');
 
-    if (!sessionCookie) {
-        if (!refreshToken) {
-            if (!isPublicRoute) redirect(303, "/login");
-            return {};
-        }
+	if (!sessionCookie) {
+		if (!refreshToken) {
+			if (!isPublicRoute) redirect(303, '/login');
+			return {};
+		}
 
-        const refreshed = await tryRefresh(fetch, cookies, refreshToken);
-        if (!refreshed) {
-            if (!isPublicRoute) redirect(303, "/login");
-            return {};
-        }
+		const refreshed = await tryRefresh(fetch, cookies, refreshToken);
+		if (!refreshed) {
+			if (!isPublicRoute) redirect(303, '/login');
+			return {};
+		}
 
-        sessionCookie = cookies.get("jwt");
-    }
+		sessionCookie = cookies.get('jwt');
+	}
 
-    let res = await fetch("http://localhost:5172/api/user/me", {
-        headers: { cookie: `jwt=${sessionCookie}` }
-    });
+	let res = await fetch('http://localhost:5172/api/user/me', {
+		headers: { cookie: `jwt=${sessionCookie}` }
+	});
 
-    // jwt was present but invalid/expired, fall back to refresh before giving up
-    if (!res.ok && refreshToken) {
-        const refreshed = await tryRefresh(fetch, cookies, refreshToken);
-        if (refreshed) {
-            sessionCookie = cookies.get("jwt");
-            res = await fetch("http://localhost:5172/api/user/me", {
-                headers: { cookie: `jwt=${sessionCookie}` }
-            });
-        }
-    }
+	// jwt was present but invalid/expired, fall back to refresh before giving up
+	if (!res.ok && refreshToken) {
+		const refreshed = await tryRefresh(fetch, cookies, refreshToken);
+		if (refreshed) {
+			sessionCookie = cookies.get('jwt');
+			res = await fetch('http://localhost:5172/api/user/me', {
+				headers: { cookie: `jwt=${sessionCookie}` }
+			});
+		}
+	}
 
-    if (!res.ok) {
-        if (!isPublicRoute) redirect(303, "/login");
-        return {};
-    }
+	if (!res.ok) {
+		if (!isPublicRoute) redirect(303, '/login');
+		return {};
+	}
 
-    if (isPublicRoute) redirect(303, "/");
+	if (isPublicRoute) redirect(303, '/');
 
-    const userData = await res.json() as User;
-    return { userData };
+	const userData = (await res.json()) as User;
+	return { userData };
 };
