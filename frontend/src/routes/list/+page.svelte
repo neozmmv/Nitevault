@@ -1,4 +1,3 @@
-<!-- sidebar-07 https://www.shadcn-svelte.com/blocks -->
 <script lang="ts">
     import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
@@ -11,35 +10,18 @@
     import { formatFileSize, formatDate } from "$lib/utils/format";
     import { Button } from "$lib/components/ui/button/index.js";
     import Trash2 from "@lucide/svelte/icons/trash-2";
-    import Download from "@lucide/svelte/icons/download"
-	import { fetchFiles } from "$lib/utils/storage";
-    import { deleteFile } from "$lib/utils/storage";
+    import Download from "@lucide/svelte/icons/download";
+    import { fetchFiles, deleteFile, getDownloadToken } from "$lib/utils/storage";
 
     let files = $state<FileItem[]>([]);
 
-    const downloadFile = async (fileId: string, fileName: string) => {
-        try {
-            const res = await fetch(`http://localhost:5172/api/storage/download/${fileId}`, { credentials: "include" });
-            if(!res.ok) {
-                console.error("Error while downloading file ", fileId);
-                return;
-            }
+    const downloadFile = async (fileId: string) => {
+        const token = await getDownloadToken(fileId);
+        if (!token) return;
 
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
-
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error("Failed to download file: ", err);
-        }
-    }
+        const url = `http://localhost:5172/api/storage/download/${fileId}?token=${token}`;
+        window.location.href = url;
+    };
 
     $effect(() => {
         async function load() {
@@ -106,7 +88,7 @@
                                             size="icon"
                                             variant="outline"
                                             class="cursor-pointer"
-                                            onclick={() => downloadFile(file.id, file.originalFileName)}
+                                            onclick={() => downloadFile(file.id)}
                                         >
                                             <Download class="size-4" />
                                         </Button>

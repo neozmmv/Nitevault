@@ -21,3 +21,22 @@ export async function deleteFile(fileId: string) {
     }
     return res.status;
 }
+
+export async function getDownloadToken(fileId: string): Promise<string | undefined> {
+    try {
+        const res = await fetch(`http://localhost:5172/api/storage/generateToken/${fileId}`, {
+            credentials: "include"
+        });
+
+        if (!res.ok) {
+            console.error("Failed to generate download token:", res.status);
+            return undefined;
+        }
+
+        const { token } = await res.json();
+        return token;
+    } catch (err) {
+        console.error("Failed to generate download token:", err);
+        return undefined;
+    }
+}
