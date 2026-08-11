@@ -7,10 +7,12 @@ using nitevault.Dto;
 public class StorageController : ControllerBase
 {
     private readonly StorageService _storage;
+    private readonly DownloadTokenService _dts;
 
-    public StorageController(StorageService storage)
+    public StorageController(StorageService storage, DownloadTokenService dts)
     {
         _storage = storage;
+        _dts = dts;
     }
 
     [Authorize]
@@ -24,17 +26,22 @@ public class StorageController : ControllerBase
         return Ok(new {fileId});
     }
 
-    [Authorize]
+    // [Authorize]
     [HttpGet("download/{fileId}")]
-    public async Task<ActionResult> Download(Guid fileId)
+    public async Task<ActionResult> Download(Guid fileId, [FromQuery] string token)
     {
-        var userId = User.GetAuthorizedTokenOwner();
+        var result = await _dts.ValidateToken(token);
+        if (result is null) return Unauthorized();
 
-        FileDownloadInfo? result = await _storage.GetFileForDownloadAsync(fileId, userId);
-        if (result is null) return NotFound();
+        var (tokenFileId, tokenUserId) = result.Value;
 
-        Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{result.fileName}\"");
-        return File(result.stream, result.contentType);
+        if (tokenFileId != fileId) return Unauthorized();
+
+        FileDownloadInfo? fileInfo = await _storage.GetFileForDownloadAsync(fileId, tokenUserId);
+        if (fileInfo is null) return NotFound();
+
+        Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{fileInfo.fileName}\"");
+        return File(fileInfo.stream, fileInfo.contentType);
     }
 
     [Authorize]
@@ -64,5 +71,19 @@ public class StorageController : ControllerBase
         if (!deleted) return NotFound();
 
         return NoContent();
+    }
+
+    [Authorize]
+    [HttpGet("generateToken/{fileId}")]
+    public async Task<ActionResult> GetDownloadToken(Guid fileId)
+    {
+        Guid userId = User.GetAuthorizedTokenOwner();
+
+        var file = await _storage.GetFileById(fileId, userId);
+        if (file is null)
+            return NotFound();
+
+        string token = await _dts.GenerateToken(fileId, userId);
+        return Ok(new {token});
     }
 }
