@@ -10,6 +10,9 @@ Self-hosted file storage that uses Telegram as the storage backend. Files are up
 
 ## Quick overview
 
+<img src="pics/menu.png"/>
+<img src="pics/list.png">
+
 Nitevault is made of these pieces, all started together via Docker Compose:
 
 - **frontend** — the web interface (http://localhost:3000)
