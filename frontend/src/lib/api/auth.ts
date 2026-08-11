@@ -1,8 +1,7 @@
-
-// change localhost to container name on dockerized version!
+import { API_URL } from "$lib/config";
 
 export async function login(email: string, password: string) {
-    const res = await fetch("http://localhost:5172/api/auth/login",
+    const res = await fetch(`${API_URL}/api/auth/login`,
         {
             method: "POST",
             headers: { "Content-Type" : "application/json" },
@@ -15,7 +14,7 @@ export async function login(email: string, password: string) {
 }
 
 export async function signUp(name: string, email: string, password: string) {
-    const res = await fetch("http://localhost:5172/api/auth/signUp",
+    const res = await fetch(`${API_URL}/api/auth/signUp`,
         {
             method: "POST",
             headers: { "Content-Type" : "application/json" },
@@ -28,7 +27,7 @@ export async function signUp(name: string, email: string, password: string) {
 }
 
 export async function logout() {
-    const res = await fetch("http://localhost:5172/api/auth/logout", {
+    const res = await fetch(`${API_URL}/api/auth/logout`, {
         method: "POST",
         headers: { "Content-Type" : "application/json" },
         credentials: "include"

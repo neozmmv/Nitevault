@@ -2,11 +2,12 @@ import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import type User from '$lib/interfaces/user';
 import type { Cookies } from '@sveltejs/kit';
+import { API_URL } from '$lib/config';
 
 const PUBLIC_ROUTES = ['/login', '/signUp'];
 
 async function tryRefresh(fetch: typeof globalThis.fetch, cookies: Cookies, refreshToken: string) {
-	const res = await fetch('http://localhost:5172/api/auth/refresh', {
+	const res = await fetch(`${API_URL}/api/auth/refresh`, {
 		headers: { cookie: `refresh-token=${refreshToken}` },
 		method: 'POST'
 	});
@@ -56,7 +57,7 @@ export const load: LayoutServerLoad = async ({ fetch, cookies, url }) => {
 		sessionCookie = cookies.get('jwt');
 	}
 
-	let res = await fetch('http://localhost:5172/api/user/me', {
+	let res = await fetch(`${API_URL}/api/user/me`, {
 		headers: { cookie: `jwt=${sessionCookie}` }
 	});
 
@@ -65,7 +66,7 @@ export const load: LayoutServerLoad = async ({ fetch, cookies, url }) => {
 		const refreshed = await tryRefresh(fetch, cookies, refreshToken);
 		if (refreshed) {
 			sessionCookie = cookies.get('jwt');
-			res = await fetch('http://localhost:5172/api/user/me', {
+			res = await fetch(`${API_URL}/api/user/me`, {
 				headers: { cookie: `jwt=${sessionCookie}` }
 			});
 		}

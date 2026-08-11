@@ -4,6 +4,7 @@
     import XIcon from "@lucide/svelte/icons/x";
     import { Button } from "$lib/components/ui/button/index.js";
     import { formatFileSize } from "$lib/utils/format";
+    import { API_URL } from "$lib/config";
 
     let { onUploadComplete }: { onUploadComplete: () => void } = $props();
 
@@ -73,7 +74,7 @@
             formData.append("file", pending.file);
 
             const xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://localhost:5172/api/storage/upload");
+            xhr.open("POST", `${API_URL}/api/storage/upload`);
             xhr.withCredentials = true; // sends cookies, equivalent to credentials: 'include'
 
             xhr.upload.onprogress = (e) => {

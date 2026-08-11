@@ -13,6 +13,7 @@
     import Trash2 from "@lucide/svelte/icons/trash-2";
     import Download from "@lucide/svelte/icons/download";
     import { fetchFiles, deleteFile, getDownloadToken } from "$lib/utils/storage";
+    import { API_URL } from "$lib/config";
 
     let files = $state<FileItem[]>([]);
     let fileToDelete = $state<FileItem | null>(null);
@@ -22,7 +23,7 @@
         const token = await getDownloadToken(fileId);
         if (!token) return;
 
-        const url = `http://localhost:5172/api/storage/download/${fileId}?token=${token}`;
+        const url = `${API_URL}/api/storage/download/${fileId}?token=${token}`;
         window.location.href = url;
     };
 

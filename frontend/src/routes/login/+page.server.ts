@@ -8,7 +8,6 @@ export const actions: Actions = {
         const data = await request.formData();
         const email = data.get("email") as string;
         const password = data.get("password") as string;
-
         const res = await fetch("http://localhost:5172/api/auth/login", {
             method: "POST",
             headers: {
