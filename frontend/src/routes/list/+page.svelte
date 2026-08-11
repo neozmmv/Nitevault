@@ -6,6 +6,7 @@
     import type { PageData } from "./$types";
     import Togglemode from "$lib/components/ui/toggle-mode/togglemode.svelte";
     import * as Table from "$lib/components/ui/table/index.js";
+    import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
     import type FileItem from "$lib/interfaces/file";
     import { formatFileSize, formatDate } from "$lib/utils/format";
     import { Button } from "$lib/components/ui/button/index.js";
@@ -14,6 +15,8 @@
     import { fetchFiles, deleteFile, getDownloadToken } from "$lib/utils/storage";
 
     let files = $state<FileItem[]>([]);
+    let fileToDelete = $state<FileItem | null>(null);
+    let isDeleting = $state(false);
 
     const downloadFile = async (fileId: string) => {
         const token = await getDownloadToken(fileId);
@@ -22,6 +25,24 @@
         const url = `http://localhost:5172/api/storage/download/${fileId}?token=${token}`;
         window.location.href = url;
     };
+
+    function requestDelete(file: FileItem) {
+        fileToDelete = file;
+    }
+
+    async function confirmDelete() {
+        if (!fileToDelete) return;
+
+        isDeleting = true;
+        const success = await deleteFile(fileToDelete.id);
+        isDeleting = false;
+
+        if (success) {
+            files = files.filter((f) => f.id !== fileToDelete!.id);
+        }
+
+        fileToDelete = null;
+    }
 
     $effect(() => {
         async function load() {
@@ -51,7 +72,7 @@
                             </Breadcrumb.Item>
                             <Breadcrumb.Separator class="hidden md:block" />
                             <Breadcrumb.Item>
-                                <Breadcrumb.Page>List Files</Breadcrumb.Page>
+                                <Breadcrumb.Page>Manage Files</Breadcrumb.Page>
                             </Breadcrumb.Item>
                         </Breadcrumb.List>
                     </Breadcrumb.Root>
@@ -96,7 +117,7 @@
                                             size="icon"
                                             variant="destructive"
                                             class="cursor-pointer"
-                                            onclick={() => deleteFile(file.id)}
+                                            onclick={() => requestDelete(file)}
                                         >
                                             <Trash2 class="size-4" />
                                         </Button>
@@ -110,3 +131,20 @@
         </div>
     </Sidebar.Inset>
 </Sidebar.Provider>
+
+<AlertDialog.Root open={fileToDelete !== null} onOpenChange={(open) => !open && (fileToDelete = null)}>
+    <AlertDialog.Content>
+        <AlertDialog.Header>
+            <AlertDialog.Title>Delete File?</AlertDialog.Title>
+            <AlertDialog.Description>
+                Are you sure you want to delete <strong>{fileToDelete?.originalFileName}</strong>? This action cannot be undone.
+            </AlertDialog.Description>
+        </AlertDialog.Header>
+        <AlertDialog.Footer>
+            <AlertDialog.Cancel disabled={isDeleting} class="cursor-pointer">Cancel</AlertDialog.Cancel>
+            <AlertDialog.Action disabled={isDeleting} onclick={confirmDelete} class="bg-red-500 text-white cursor-pointer hover:bg-red-900">
+                {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialog.Action>
+        </AlertDialog.Footer>
+    </AlertDialog.Content>
+</AlertDialog.Root>

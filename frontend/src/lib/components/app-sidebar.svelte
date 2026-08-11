@@ -19,12 +19,8 @@
 			isActive: true,
 			items: [
 				{
-					title: "List Files",
+					title: "Manage Files",
 					url: "/list"
-				},
-				{
-					title: "Upload Files",
-					url: "/upload"
 				}
 			]
 		},

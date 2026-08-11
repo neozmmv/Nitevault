@@ -15,11 +15,13 @@ export const fetchFiles = async (): Promise<FileItem[] | undefined> => {
 }
 
 export async function deleteFile(fileId: string) {
-    const res = await fetch(`http://localhost:5172/api/storage/file/${fileId}`, { method: "DELETE", credentials: "include"})
-    if(!res.ok) {
-        console.error("Failed to delete file: ", res.status)
+    try {
+        const res = await fetch(`http://localhost:5172/api/storage/file/${fileId}`, { method: "DELETE", credentials: "include"})
+        return res.ok;
+    } catch (err) {
+        console.error("Failed to delete file:", err);
+        return false;
     }
-    return res.status;
 }
 
 export async function getDownloadToken(fileId: string): Promise<string | undefined> {
