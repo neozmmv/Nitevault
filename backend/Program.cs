@@ -84,7 +84,12 @@ builder.Services.AddCors(options =>
 {
    options.AddPolicy("AllowFrontend", policy =>
    {
-      policy.WithOrigins("http://localhost:3000")
+      policy.SetIsOriginAllowed(origin =>
+            {
+                if (origin == "http://localhost:3000") return true;
+                if (origin.EndsWith(".trycloudflare.com", StringComparison.OrdinalIgnoreCase)) return true;
+                return false;
+            })
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials(); 
