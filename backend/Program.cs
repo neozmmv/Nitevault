@@ -80,6 +80,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
+builder.Services.AddCors(options =>
+{
+   options.AddPolicy("AllowFrontend", policy =>
+   {
+      policy.WithOrigins("http://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials(); 
+   });
+});
+
 builder.Services.Configure<FormOptions>(options =>
 {
    options.MultipartBodyLengthLimit = 2_100_000_000; 
@@ -107,6 +118,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
