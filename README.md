@@ -206,3 +206,7 @@ docker compose up --build
 - If your bot token is ever exposed, revoke it immediately via `@BotFather` → `/mybots` → API Token → Revoke.
 - The `api_id`/`api_hash` pair is tied to your personal Telegram account. If you're running this at any real volume, consider using a secondary phone number to isolate risk from your main account.
 - Change the default Postgres username/password before deploying anywhere beyond your own machine.
+
+## ❗ Disclaimer
+
+The author is not responsible in any way for account bans or breaking Telegram`s TOS. Use at your own risk.
